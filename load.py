@@ -2,6 +2,7 @@ import pickle
 import urllib.request
 import zipfile
 
+# prawdopodobnie potrzebujesz zaktualizować ten link - najłatwiej wyszukać poprzez "słownik odmian" w Google
 POLISH_DICT_URL = r'https://sjp.pl/slownik/odmiany/sjp-odm-20190202.zip'
 
 
@@ -16,7 +17,7 @@ def to_sequence(structure):
     return sequence
 
 
-def get_polish_dict(dict_path):
+def get_polish_dict(dict_path='polski_slownik.zip'):
     try:
         z_f = zipfile.ZipFile(dict_path)
     except FileNotFoundError:

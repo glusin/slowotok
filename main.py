@@ -1,19 +1,15 @@
 import time
 
-import pyautogui
-
 import load
+from Browser import Chrome
 
-# o11142591@nwytg.net
-# R6Yez5yU7nPAczk
+accepted_chars = set('weęrtyuioópaąsśdfghjklłzżźcćbnńm')  # litery występujące na planszy
 
-accepted_chars = set('weęrtyuioópaąsśdfghjklłzżźcćbnńm')
-
-words = load.get_polish_dict('polish.txt')
+words = load.get_polish_dict()
 words = [slowo for odmiany_slowa in words for slowo in odmiany_slowa[:1]]
 words = [w.lower() for w in words]
 words = [w for w in words if set(w).issubset(accepted_chars)]
-words = [w for w in words if 2 < len(w) < 14]
+words = [w for w in words if 2 < len(w) < 14]  # słowa w grze mają dłogość [3, 13] liter
 words = set(words)
 
 combs = load.load_combinations('combinations.pkl')
@@ -21,38 +17,40 @@ combs = [c for c in combs if len(c) < 14]
 combs = sorted(combs, key=lambda x: len(x), reverse=True)
 
 
-start_time = time.time()
-int2char = dict()
-for i in range(16):
-    int2char[i] = 'ikloynornctyzyźs'[i]
+def find_words(map_chars):
+    int2char_ = dict()
+    for i in range(16):
+        int2char_[i] = map_chars[i]
 
-found_words = []
-found_combs = []
-n_found_words = 0
-for counter, c in enumerate(combs):
-    word = ''.join([int2char[int_] for int_ in c])
-    if word in words:
-        print(word, c)
-        n_found_words += 1
+    found_words = []
+    found_combs = []
+    n_found_words = 0
+    for counter, c in enumerate(combs):
+        word = ''.join([int2char_[int_] for int_ in c])
+        if word in words:
+            print(word, c)
+            n_found_words += 1
 
-        if word not in found_words:
-            found_words.append(word)
-            found_combs.append(c)
+            if word not in found_words:
+                found_words.append(word)
+                found_combs.append(c)
+
+    return found_combs
 
 
-start = (638, 198)
-dx = dy = 120
-pyautogui.PAUSE = 0.05
-for combination in found_combs:
-    for counter, block in enumerate(combination):
-        x = block % 4
-        y = block // 4
-        to_x = start[0] + dx*x
-        to_y = start[1] + dy*y
-        pyautogui.dragTo(x=to_x, y=to_y, mouseDownUp=False)
-        if counter == 0:
-            pyautogui.mouseDown(x=to_x, y=to_y)
+if __name__ == '__main__':
+    chrome = Chrome()
+    chrome.open_slowotok()
+    chrome.login('o11738634@nwytg.net', 'sfssp9ef9kiCArc')
+    chrome.start_game()
 
-    pyautogui.mouseUp()
-    if time.time() - start_time > 80:
-        break
+    while True:
+        print('Czekam na rozpoczęcie nowej tury')
+        if not chrome.is_turn_beggining():
+            time.sleep(1)
+            continue
+        int2char = chrome.get_board()
+        letters = [int2char[i].lower() for i in range(16)]
+        word_on_board = find_words(letters)
+        for word in word_on_board:
+            chrome.input_word(word)

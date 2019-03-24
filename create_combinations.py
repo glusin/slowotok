@@ -39,9 +39,12 @@ for x in range(N):
         for s in main_(map_, (x, y), []):
             combinations.add(s)
 
+combinations = list(combinations)
+for i in range(len(combinations)):
+    c = combinations[i]
+    combinations[i] = tuple(int(idx) - 1 for idx in c.split('_') if idx)
 
-combinations = [[int(idx) - 1 for idx in c.split('_') if idx] for c in combinations]
-combinations = [c for c in combinations if len(c) > 2]
+combinations = [c for c in combinations if 14 > len(c) > 2]
 with open('combinations.pkl', 'wb') as pkl:
     pickle.dump(combinations, pkl)
 
