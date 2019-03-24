@@ -3,6 +3,13 @@ import time
 import load
 from Browser import Chrome
 
+"""
+Ten skrypt uruchamia grę i bota. Zanim uruchomisz należy 
+1) wykonać create_combinations.py, który utworzy plik niezbędny do szybkiego wyznaczenia słów.
+2) upewnić się, ze chromedriver jest w PATH
+3) upewnić się, że link POLISH_DICT_URL w load jest aktualny
+"""
+
 accepted_chars = set('weęrtyuioópaąsśdfghjklłzżźcćbnńm')  # litery występujące na planszy
 
 words = load.get_polish_dict()
